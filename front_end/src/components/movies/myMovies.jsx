@@ -60,7 +60,7 @@ function ImageCorusel (movie,index) {
 //==========================================
 
 //==========================================
-// All UI of page "My Movies"
+// All UI of page "My Movies" 1) Carousel 2) List of movies
 export default function MyMovies() {
 
     // A hook to store the movies
