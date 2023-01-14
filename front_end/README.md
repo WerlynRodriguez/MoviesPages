@@ -1,5 +1,13 @@
 # How to start the frontEnd app
 
+ReactJS: v18.2.0\
+Ant Design: v5.1.4\
+UI Router React: v1.0.7\
+CSS3\
+ECMAScript 2022
+
+## Install project
+
 Tool: Visual Code\
 Install node js and npm
 
@@ -7,7 +15,7 @@ After clone the repository in vsCode.
 
 If yo dont know: [How to clone a repository VSCODE](https://code.visualstudio.com/docs/sourcecontrol/github#:~:text=You%20can%20search%20for%20and,you%20have%20no%20folder%20open)
 
-## Starting Scripts
+## Start server
 
 In the project terminal, you run:
 
