@@ -16,7 +16,11 @@ export default function FormMovie (props) {
     }, [movie, mode, form]);
 
     const onFinish = (values) => {
-        onOk(values);
+        onOk({
+            title: values.title,
+            description: values.description,
+            url: values.url ? values.url : "https://source.unsplash.com/random/800x600"
+        });
     }
 
     return (

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import states from './config/states';
 import config from './config/router';
-import { UIRouter, UIView, useSrefActive, pushStateLocationPlugin } from '@uirouter/react';
+import { UIRouter, UIView, useSrefActive, pushStateLocationPlugin} from '@uirouter/react';
 
 import "./index.css";
 import { ConfigProvider } from 'antd';

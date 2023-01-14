@@ -1,6 +1,7 @@
 import React from "react";
 import { Form, Layout, Typography, Input, Button, message } from "antd";
 import LoginBg from "../../resources/LoginBg.jpg";
+import { useRouter } from "@uirouter/react";
 
 const { Footer } = Layout;
 const { Title } = Typography;
@@ -8,6 +9,7 @@ const { Title } = Typography;
 export default function Login() {
 
   const [form] = Form.useForm();
+  const router = useRouter();
   // Notification Api from antd
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -19,7 +21,14 @@ export default function Login() {
       // Redirect to the movies page 
       messageApi.success("Inicio de sesión exitoso",1.5)
       .then(() => {
-        window.location.href = "/myMovies";
+        // Encript the user email
+        const encryptedEmail = btoa(values.email);
+
+        // Save the user email in the local storage
+        localStorage.setItem("accessToken", encryptedEmail);
+        
+        // Redirect to the movies page
+        router.stateService.go("myMovies");
       });
 
     } else {

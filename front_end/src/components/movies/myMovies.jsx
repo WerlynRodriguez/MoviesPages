@@ -1,71 +1,17 @@
 import React from 'react';
 import "./myMovies.css";
-import { Badge, Button, Carousel, List, Space, Typography, FloatButton, Modal } from 'antd';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { useMemo } from 'react';
+import { Button, Carousel, List, Typography, FloatButton, Modal } from 'antd';
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from "@uirouter/react";
 import FormMovie from './formMovie';
+import ImageCorusel from './imageCarousel';
 
 const { confirm } = Modal;
 
 //==========================================
-// This function is used to create the images for the carousel
-// It receives the movie object and the index of the movie
-// It returns a div with the image and the title with description and static badges
-function ImageCorusel (movie,index) {
-    const {url, title, description} = movie;
-    const imageUrl = url !== "" ? url : "https://source.unsplash.com/random/800x600";
-    return(<div key={index}>
-        <div
-        style={{
-            backgroundImage:"linear-gradient(rgba(0,0,0,0.5) 50%,rgba(0,0,0,1) 98%),url("+imageUrl+")",
-            backgroundSize:"cover",
-            backgroundPosition:"center",
-            height:"450px",
-            display:"flex",
-            flexDirection:"column",
-            justifyContent:"flex-end",
-            padding:"30px"
-        }}>
-            <Typography.Title
-            style={{
-                margin:"0",
-                font:"bold 50px Comic Sans MS",
-                color:"white"
-            }}>
-                {title}
-            </Typography.Title>
-            <br/>
-
-            <Space>
-                <Badge count="Nueva" style={{backgroundColor: "#9E339F" }}/>
-                <Badge count="Full HD" style={{backgroundColor: "#9E339F", border: "0" }}/>
-            </Space>
-
-            <br/>
-            <Typography.Paragraph
-            style={{
-                margin:"0",
-                font:"bold 20px Calibri",
-                color:"rgba(255,255,255,0.8)"
-            }}>
-                {description}
-            </Typography.Paragraph>
-
-            <br/>
-            <Button type="primary" style={{
-                width:"150px"
-            }}> Añadir a favoritos </Button>
-            <br/>
-        </div>
-    </div>)
-}
-//==========================================
-
-//==========================================
 // All UI of page "My Movies" 1) Carousel 2) List of movies
 export default function MyMovies() {
-
+    const router = useRouter();
     // A hook to store the movies
     const [movies, setMovies] = useState([]);
 
@@ -136,7 +82,23 @@ export default function MyMovies() {
         setOpenForm(false);
     }
 
+    const signOut = () => {
+        const email = atob(localStorage.getItem("accessToken"));
+        confirm({
+            title: '¿Estás seguro de cerrar sesión?',
+            content: 'La sesión de "'+email+'" será cerrada.',
+            okText: 'Sí',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk() {
+                localStorage.removeItem("accessToken");
+                router.stateService.go("login");
+            },
+        });
+    }
+
     return (<>
+
     {/* The carousel is created with the movies array, display movies with animation*/}
     <Carousel autoplay autoplaySpeed={3500}>
         {movies.length > 0 ?
@@ -154,6 +116,14 @@ export default function MyMovies() {
         padding: "30px",
         backgroundColor: "black",
     }}>
+        <Button
+        type='primary'
+        danger
+        onClick={signOut}
+        style={{ width: "150px", marginBottom: "10px" }}>
+            Cerrar Sesión
+        </Button>
+
         <Typography.Title style={{ color: "white", textAlign: "center" }}>Mis Películas</Typography.Title>
         <List
         grid={{
@@ -204,7 +174,6 @@ export default function MyMovies() {
     {/* The floating button group is created, it has a button to add a movie and 
     two buttons to edit and delete a movie */}
     <FloatButton.Group
-    shape='square'
     style={{
         right: "30px",
     }}>
@@ -214,23 +183,17 @@ export default function MyMovies() {
             <FloatButton 
             shape="square"
             onClick={handleDeleteMovie}
-            description={
-                <Typography.Title> - </Typography.Title>
-            }/>
+            description="delete"/>
             <FloatButton 
             shape="square"
             onClick={() => setOpenForm(true)}
-            description={
-                <Typography.Title> l </Typography.Title>
-            }/>
+            description="editar"/>
         </>
         :
             <FloatButton 
             shape="square"
             onClick={() => setOpenForm(true)}
-            description={
-                <Typography.Title> + </Typography.Title>
-            }/>
+            description="añadir"/>
         }
     </FloatButton.Group>
 
