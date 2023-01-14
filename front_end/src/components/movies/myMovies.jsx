@@ -1,9 +1,12 @@
 import React from 'react';
 import "./myMovies.css";
-import { Badge, Button, Carousel, List, Space, Typography } from 'antd';
+import { Badge, Button, Carousel, List, Space, Typography, FloatButton, Modal } from 'antd';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useMemo } from 'react';
+import FormMovie from './formMovie';
+
+const { confirm } = Modal;
 
 //==========================================
 // This function is used to create the images for the carousel
@@ -52,7 +55,7 @@ function ImageCorusel (movie,index) {
             <br/>
             <Button type="primary" style={{
                 width:"150px"
-            }}> Ver Información </Button>
+            }}> Añadir a favoritos </Button>
             <br/>
         </div>
     </div>)
@@ -65,6 +68,12 @@ export default function MyMovies() {
 
     // A hook to store the movies
     const [movies, setMovies] = useState([]);
+
+    // An user can select a movie, so we need to store the index of the selected movie
+    const [selectedMovie, setSelectedMovie] = useState(-1);
+
+    // A hook to store the state of the modal (open or close) to add a movie or to edit one
+    const [openForm, setOpenForm] = useState(false);
 
     // A hook to store the movies in the local storage without re-rendering (thanks UseMemo)
     const LocalMovies = useMemo(() => [
@@ -82,6 +91,50 @@ export default function MyMovies() {
     useEffect(() => {
         setMovies(LocalMovies);
     }, [LocalMovies])
+
+    // A function to handle the selection of a movie, if the movie is already selected, it will be unselected
+    const handleSelectMovie = (index) => {
+        if (selectedMovie === index) {
+            setSelectedMovie(-1);
+        } else {
+            setSelectedMovie(index);
+        }
+    }
+
+    // A function to handle the deletion of a movie, it will ask for confirmation
+    const handleDeleteMovie = () => {
+        if (selectedMovie !== -1) {
+            confirm({
+                title: '¿Estás seguro de eliminar esta película?',
+                content: 'Esta acción no se puede deshacer. La pelicula "'+movies[selectedMovie].title+'" será eliminada de la lista.',
+                okText: 'Sí',
+                okType: 'danger',
+                cancelText: 'No',
+                onOk() {
+                    const newMovies = movies.filter((movie, index) => index !== selectedMovie);
+                    setMovies(newMovies);
+                    setSelectedMovie(-1);
+                },
+            });
+        }
+    }
+
+    const onOkForm = (fmovie) => {
+        if (selectedMovie !== -1) {
+            const newMovies = movies.map((movie, index) => {
+                if (index === selectedMovie) {
+                    return fmovie;
+                } else {
+                    return movie;
+                }
+            });
+            setMovies(newMovies);
+        } else {
+            const newMovies = [...movies, fmovie];
+            setMovies(newMovies);
+        }
+        setOpenForm(false);
+    }
 
     return (<>
     {/* The carousel is created with the movies array, display movies with animation*/}
@@ -113,12 +166,14 @@ export default function MyMovies() {
             xxl: 4,
         }}
         dataSource={movies}
-        renderItem={movie => (
+        renderItem={(movie,index) => (
             <List.Item>
                 <div
                 className='itemMovie'
+                onClick={() => handleSelectMovie(index)}
                 style={{
                     backgroundImage:"linear-gradient(rgba(0,0,0,0.5) 50%,rgba(0,0,0,1) 98%),url("+movie.url+")",
+                    border: selectedMovie === index ? "2px solid #9E339F" : "0",
                 }}>
                     <Typography.Title
                     style={{
@@ -133,5 +188,51 @@ export default function MyMovies() {
         )}
         />
     </div>
+
+    {/* The form to add or edit a movie is created, it is hidden 
+    by default for evit render it when it is not necessary */}
+    { openForm ? 
+        <FormMovie
+        mode={selectedMovie === -1 ? 0 : 1}
+        open={openForm}
+        onCancel={() => setOpenForm(false)}
+        onOk={onOkForm}
+        movie={selectedMovie === -1 ? {title:"",url:"",description:""} : movies[selectedMovie]}
+        /> 
+    : null}
+
+    {/* The floating button group is created, it has a button to add a movie and 
+    two buttons to edit and delete a movie */}
+    <FloatButton.Group
+    shape='square'
+    style={{
+        right: "30px",
+    }}>
+        { selectedMovie !== -1 ?
+        
+        <>
+            <FloatButton 
+            shape="square"
+            onClick={handleDeleteMovie}
+            description={
+                <Typography.Title> - </Typography.Title>
+            }/>
+            <FloatButton 
+            shape="square"
+            onClick={() => setOpenForm(true)}
+            description={
+                <Typography.Title> l </Typography.Title>
+            }/>
+        </>
+        :
+            <FloatButton 
+            shape="square"
+            onClick={() => setOpenForm(true)}
+            description={
+                <Typography.Title> + </Typography.Title>
+            }/>
+        }
+    </FloatButton.Group>
+
     </>);
 }
