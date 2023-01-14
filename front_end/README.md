@@ -1,8 +1,13 @@
 # How to start the frontEnd app
 
-Tool: Visual Code
+Tool: Visual Code\
+Install node js and npm
 
-## starting Scripts
+After clone the repository in vsCode.
+
+If yo dont know: [How to clone a repository VSCODE](https://code.visualstudio.com/docs/sourcecontrol/github#:~:text=You%20can%20search%20for%20and,you%20have%20no%20folder%20open)
+
+## Starting Scripts
 
 In the project terminal, you run:
 
